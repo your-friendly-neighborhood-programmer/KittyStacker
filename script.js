@@ -8,7 +8,8 @@ const height = canvas.height = window.innerHeight;
 // Game configuration
 const GAME_DURATION = 60; // seconds
 const GROUND_HEIGHT = 50;
-const CAT_SIZE = 100;
+const CAT_WIDTH = 200;  // New width for cats
+const CAT_HEIGHT = 60;  // New height for cats
 const CAT_SPEED = 180; // Pixels per second (increased from 120)
 const CAT_FALL_SPEED = 300; // Pixels per second for falling
 const CAMERA_FOLLOW_SPEED = 0.05; // How quickly camera follows the stack (0-1)
@@ -106,10 +107,10 @@ document.addEventListener('keydown', (e) => {
 // Check if two cats are colliding
 function checkCollision(cat1, cat2) {
     return (
-        cat1.x < cat2.x + CAT_SIZE &&
-        cat1.x + CAT_SIZE > cat2.x &&
-        cat1.y < cat2.y + CAT_SIZE &&
-        cat1.y + CAT_SIZE > cat2.y
+        cat1.x < cat2.x + CAT_WIDTH &&
+        cat1.x + CAT_WIDTH > cat2.x &&
+        cat1.y < cat2.y + CAT_HEIGHT &&
+        cat1.y + CAT_HEIGHT > cat2.y
     );
 }
 
@@ -169,7 +170,7 @@ function gameLoop(currentTime) {
             
             // Loop back to left side when reaching right edge
             if (currentCat.x > width) {
-                currentCat.x = -CAT_SIZE;
+                currentCat.x = -CAT_WIDTH;
             }
             
             // Make current cat follow the camera when not falling
@@ -182,15 +183,15 @@ function gameLoop(currentTime) {
             let collision = false;
             
             // Check collision with ground
-            if (currentCat.y + CAT_SIZE >= height - GROUND_HEIGHT) {
-                currentCat.y = height - GROUND_HEIGHT - CAT_SIZE;
+            if (currentCat.y + CAT_HEIGHT >= height - GROUND_HEIGHT) {
+                currentCat.y = height - GROUND_HEIGHT - CAT_HEIGHT;
                 collision = true;
             }
             
             // Check collision with stacked cats
             for (const stackedCat of stackedCats) {
                 if (checkCollision(currentCat, stackedCat)) {
-                    currentCat.y = stackedCat.y - CAT_SIZE;
+                    currentCat.y = stackedCat.y - CAT_HEIGHT;
                     collision = true;
                     break;
                 }
@@ -201,8 +202,8 @@ function gameLoop(currentTime) {
                 stackedCats.push({...currentCat});
                 
                 // Calculate score based on stack height
-                const stackHeight = height - (currentCat.y + CAT_SIZE);
-                score = Math.max(score, Math.floor(stackHeight / CAT_SIZE));
+                const stackHeight = height - (currentCat.y + CAT_HEIGHT);
+                score = Math.max(score, Math.floor(stackHeight / CAT_HEIGHT));
                 updateScoreDisplay();
                 
                 // Reset current cat
@@ -218,11 +219,11 @@ function gameLoop(currentTime) {
     
     // Draw stacked cats
     for (const cat of stackedCats) {
-        ctx.drawImage(cat.img, cat.x, cat.y, CAT_SIZE, CAT_SIZE);
+        ctx.drawImage(cat.img, cat.x, cat.y, CAT_WIDTH, CAT_HEIGHT);
     }
     
     // Draw current cat
-    ctx.drawImage(currentCat.img, currentCat.x, currentCat.y, CAT_SIZE, CAT_SIZE);
+    ctx.drawImage(currentCat.img, currentCat.x, currentCat.y, CAT_WIDTH, CAT_HEIGHT);
     
     // Restore transformation matrix
     ctx.restore();
